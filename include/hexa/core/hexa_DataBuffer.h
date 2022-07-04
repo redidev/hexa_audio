@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iterator>
 #include <vector>
 
 namespace hexa
@@ -12,12 +13,14 @@ namespace hexa
 	public:
 		DataBuffer(const DataBuffer& other) = delete;
 		DataBuffer& operator= (const DataBuffer& other) = delete;
-	
+
 		DataBuffer(DataBuffer&& other) = default;
 		DataBuffer& operator= (DataBuffer&& other) = default;
 
 		DataBuffer(size_t numRows = 32, size_t numCols = 2)
-		{ resize(numRows, numCols); }
+		{
+			resize(numRows, numCols);
+		}
 
 		void resize(size_t newNumRows, size_t newNumCols)
 		{
@@ -32,8 +35,7 @@ namespace hexa
 
 		void clearColumn(size_t c) noexcept
 		{
-			Type* colData = &rawData[flat(0, c)];
-			std::fill_n(std::begin(colData), numRows, Type(0));
+			std::fill_n(&rawData[flat(0, c)], numRows, Type(0));
 		}
 
 		const Type* col(size_t c) const { return &rawData[flat(0, c)]; }
@@ -42,15 +44,14 @@ namespace hexa
 
 		Type& operator() (size_t r, size_t c) { return rawData[flat(r, c)]; }
 
-		const Type& operator() (size_t r, size_t c) const{ return rawData[flat(r, c)]; }
+		const Type& operator() (size_t r, size_t c) const { return rawData[flat(r, c)]; }
 
-		void clearRegion(size_t startRow, size_t length) 
+		void clearRegion(size_t startRow, size_t length)
 		{
 			assert(startRow + length < numRows);
 			for (size_t c = 0; c < numCols; ++c)
 			{
-				Type* colRegion = &rawData[flat(startRow, c)];
-				std::fill_n(std::begin(colRegion), length, Type(0));
+				std::fill_n(&rawData[flat(startRow, c)], length, Type(0));
 			}
 		}
 
@@ -59,7 +60,7 @@ namespace hexa
 		size_t getNumCols() const noexcept { return numCols; }
 
 		Type* data() { return rawData.data(); }
-		
+
 		const Type* data() const { return rawData.data(); }
 
 	private:
