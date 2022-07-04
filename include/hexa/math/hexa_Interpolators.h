@@ -16,9 +16,8 @@ namespace hexa
 		static constexpr size_t numPoints = 1;
 
 		//==============================================================================
-		Type operator() (double x, Type y0) const noexcept
+		Type operator() ([[maybe_unused]] double x, Type y0) const noexcept
 		{
-			juce::ignoreUnused(x);
 			return y0;
 		}
 	};
